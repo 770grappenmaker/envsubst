@@ -1,2 +1,2 @@
 # envsubst
-Clone of GNY gettext `envsubst`. Has a go `envsubst` compatible variant. Please do not use this for any actual software as it might turn out pretty poorly written. It is tested to an extent.
+Clone of GNU gettext `envsubst`. Has a golang `envsubst` compatible variant. Please do not use this for any actual software as it might turn out pretty poorly written. It is tested to an extent. I personally prefer this version of `envsubst`, because it actually has error messages in important cases, like the environment variables being referenced not existing or the templates being malformed.
