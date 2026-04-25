@@ -1,2 +1,3 @@
 envsubst
+envsubst_go
 *.o
