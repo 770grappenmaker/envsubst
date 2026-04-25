@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+
+ENVSUBST="@ENVSUBST@"
+echo "envsubst: $ENVSUBST" >&2
+
+doTest() {
+    local test code stdout stderr
+    test=$1
+    eval "$(
+        (env -i - HELLO=world FOO=bar HOTEL=trivago TEST=a "$ENVSUBST" <"$test/input" \
+            2> >(
+                stderr="$(cat)"
+                declare -p stderr
+            ) \
+            > >(
+                stdout="$(cat)"
+                declare -p stdout
+            ))
+        code="$?"
+        declare -p code
+    )"
+
+    for output in stdout stderr; do
+        if [ -f "$test/$output" ]; then
+            diff "$test/$output" <(echo "${!output}") >&2 || return 1
+        fi
+    done
+
+    if [ -f "$test/code" ]; then
+        expected_code="$(cat "$test/code")"
+        if [ "$expected_code" = !0 ]; then
+            [ "$code" -ne 0 ] || return 1
+        else
+            [ "$code" -eq "$expected_code" ] || return 1
+        fi
+    fi
+}
+
+ntests=$(find @TESTS_DIR@ -mindepth 1 -maxdepth 1 -printf . | wc -c)
+
+echo "1..$ntests"
+
+i=0
+for test in @TESTS_DIR@/*; do
+    i="$((i + 1))"
+    testName="$(basename "$test")"
+    if doTest "$test"; then
+        echo "ok $i - $testName"
+    else
+        echo "not ok $i - $testName"
+    fi
+done

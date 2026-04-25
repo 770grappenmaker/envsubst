@@ -1,0 +1,3 @@
+hello, $HELLO
+foo, ${FOO}hotel: $HOTEL <- trivago
+
