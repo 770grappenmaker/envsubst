@@ -8,6 +8,7 @@
 int main(void)
 {
     bool is_dollar = false;
+    bool just_dollar = false;
     bool is_par = false;
 
     char buf[4096];
@@ -47,6 +48,14 @@ int main(void)
 
         if (is_dollar)
         {
+            if (c == '$' && just_dollar) {
+                is_dollar = false;
+                putchar_unlocked('$');
+                continue;
+            }
+
+            just_dollar = false;
+
             if (!is_par && c == '{')
             {
                 is_par = true;
@@ -109,6 +118,7 @@ int main(void)
         if (c == '$')
         {
             is_dollar = true;
+            just_dollar = true;
             continue;
         }
 

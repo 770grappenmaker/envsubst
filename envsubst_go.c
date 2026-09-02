@@ -106,11 +106,11 @@ int main(int argc, char **argv)
     }
 
     bool is_dollar = false;
+    bool just_dollar = false;
     bool is_par = false;
 
     char buf[4096];
     char name[257];
-
     int buf_ptr = 0;
     int buf_len = 0;
 
@@ -123,7 +123,7 @@ int main(int argc, char **argv)
         if (buf_ptr >= buf_len)
         {
             buf_ptr = 0;
-            buf_len = fread_unlocked(buf, 1, sizeof(buf), input_fd);
+            buf_len = fread_unlocked(buf, 1, sizeof(buf), stdin);
 
             if (errno)
             {
@@ -146,6 +146,14 @@ int main(int argc, char **argv)
 
         if (is_dollar)
         {
+            if (c == '$' && just_dollar) {
+                is_dollar = false;
+                putchar_unlocked('$');
+                continue;
+            }
+
+            just_dollar = false;
+
             if (!is_par && c == '{')
             {
                 is_par = true;
@@ -192,7 +200,7 @@ int main(int argc, char **argv)
             char *env = getenv(name);
             if (env != NULL)
             {
-                fputs(env, output_fd);
+                fputs(env, stdout);
             }
             else
             {
@@ -208,10 +216,11 @@ int main(int argc, char **argv)
         if (c == '$')
         {
             is_dollar = true;
+            just_dollar = true;
             continue;
         }
 
-        fputc_unlocked(c, output_fd);
+        putchar_unlocked(c);
     }
 
     if (is_dollar)
@@ -233,7 +242,7 @@ int main(int argc, char **argv)
         char *env = getenv(name);
         if (env != NULL)
         {
-            fputs(env, output_fd);
+            fputs(env, stdout);
         }
         else
         {

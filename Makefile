@@ -18,7 +18,7 @@ TESTS := $(notdir $(wildcard $(INPUT_DIR)/*))
 
 check: $(addprefix check-,$(PROGS))
 
-check-%: %
-	@echo Checking $^...
-	@set -e;$(foreach t,$(TESTS),printf $(t)...' '; diff -q <(TEST=a ./$^ < $(INPUT_DIR)/$(t) 2>&1) <(cat $(EXPECTED_DIR)/$(t)); echo pass;)
+check-%: % all
+	@echo Checking $<...
+	@set -e;$(foreach t,$(TESTS),printf $(t)...' '; diff -q <(TEST=a ./$< < $(INPUT_DIR)/$(t) 2>&1) <(cat $(EXPECTED_DIR)/$(t)); echo pass;)
 	@echo
